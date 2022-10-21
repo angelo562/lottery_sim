@@ -6,6 +6,7 @@ from random import choices
 from collections import Counter
 from pprint import pprint
 
+
 class Round:
     """ Class for each Round of a lottery draw
     In every round, will store 
@@ -46,14 +47,14 @@ class Round:
     def draw(self, times=1) -> tuple:
         # The basic draw mechanism for the winning and purchased tickets
         lst = []
-        
+
         for _ in range(times):
             a, b = (
                 tuple(sorted(choices(range(1, 71), k=6))),
                 tuple(sorted(choices(range(1, 26), k=1))),
             )
 
-            lst.append((a,b))
+            lst.append((a, b))
         return tuple(lst)
 
     def win_numbers(self):
@@ -67,7 +68,7 @@ class Round:
 
         match_ls = []
         for ticket in self.ticket_list:
-            
+
             c, d, = Counter(ticket[0]), ticket[1][0]
 
             e, f = Counter(self.win_numbers[0][0]), self.win_numbers[0][1][0]
@@ -89,29 +90,44 @@ class Round:
         # Gets total winnings and updates it
         self.net = self.total_winnings - self.ticket_cost * self.number
 
-def monte_carlo(ticket_cost: int, times: int) -> dict:
-    list_of_wins = []
-    for _ in times:
-        round = Round()
-        list_of_wins.append((round.total_winning))
-    dollars_won = sum(list_of_wins)
-    cost = times * ticket_cost
 
-    return {
-        "dollars_won": dollars_won,
-        "total_cost": cost,
-        "net": dollars_won - cost,
+def monte_carlo(
+    tickets_a_round: int, ticket_cost: int, jackpot: int, times: int
+) -> list:
+    """ returns a list of dictionaries, each per Monte Carlo round with lottery data.
+    {Round number : int,
+    "dollars_won": int,
+    "total_cost": int,
+    "net": int,
     }
+    
+    """
+    lst_dct = []
+    for round in range(times):
+        round_obj = Round(tickets_a_round, ticket_cost, jackpot)
+
+        d = {
+            "round": round,
+            "total_winnings": round_obj.total_winnings,
+            "total_cost": (tickets_a_round * ticket_cost),
+            "net": (round_obj.total_winnings - (tickets_a_round * ticket_cost)),
+        }
+
+        lst_dct.append(d)
+
+    return lst_dct
+
 
 def main():
-    t = Round(10, 2, 1_000_000)
-    pprint(f" The winning ticket is : {t.win_numbers}")
-    pprint(f"ticket list is {t.ticket_list}")
-    pprint(f" total winnings this round is {t.total_winnings}")
-    pprint(f" Net winnings is {t.net}")
-    pprint(f" Win distribution is {t.win_distr}")
+    dct = monte_carlo(10, 2, 30_000_000, 50)
+    pprint(dct)
+    # t = Round(10, 2, 30_000_000)
+    # pprint(f" The winning ticket is : {t.win_numbers}")
+    # pprint(f"ticket list is {t.ticket_list}")
+    # pprint(f" total winnings this round is {t.total_winnings}")
+    # pprint(f" Net winnings is {t.net}")
+    # pprint(f" Win distribution is {t.win_distr}")
 
 
 if __name__ == "__main__":
     main()
-
