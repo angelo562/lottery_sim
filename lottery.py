@@ -82,9 +82,13 @@ class Round:
         self.total_winnings = sum([self.prizes[match] for match in self.match_lst])
 
     def get_win_distribution(self) -> dict:
-        # Updates self.win_distr of the round
-        c = Counter(self.match_lst)
-        self.win_distr = dict(sorted(dict(c).items(), key=lambda item: item[0]))
+        # Updates self.win_distr of the round of any winning ticket
+
+        no_wins = [(0,0), (1,0), (2,0)]
+        w = [w for w in self.match_lst if w not in no_wins]
+        w.sort()
+        self.win_distr = dict(Counter(w))
+
 
     def get_net(self) -> int:
         # Gets total winnings and updates it
@@ -99,6 +103,7 @@ def monte_carlo(
     "dollars_won": int,
     "total_cost": int,
     "net": int,
+    "win_types": dict,
     }
     
     """
@@ -111,11 +116,16 @@ def monte_carlo(
             "total_winnings": round_obj.total_winnings,
             "total_cost": (tickets_a_round * ticket_cost),
             "net": (round_obj.total_winnings - (tickets_a_round * ticket_cost)),
+            "win_distribution" : round_obj.win_distr,
         }
 
         lst_dct.append(d)
 
     return lst_dct
+
+def analyze(d: dict) -> dict:
+    # analyze the input dictionary and spit out net loss, total rounds, & how many ticket wins of each type?
+    pass
 
 
 def main():
