@@ -34,6 +34,7 @@ class Round:
             (3, 1): 200,
             (4, 0): 500,
             (4, 1): 10_000,
+            (5, 0): 1_000_000,
             (5, 1): jackpot,
         }
 
@@ -103,6 +104,7 @@ def monte_carlo(
     "dollars_won": int,
     "total_cost": int,
     "net": int,
+    "tickets_p_round": int,
     "win_types": dict,
     }
     
@@ -123,20 +125,27 @@ def monte_carlo(
 
     return lst_dct
 
-def analyze(d: dict) -> dict:
+def analyze(l: list, t, tc) -> dict:
     # analyze the input dictionary and spit out net loss, total rounds, & how many ticket wins of each type?
-    pass
+    total_rounds = len(l)
+    total_winnings = sum([item['total_winnings'] for item in l])
+    ticket_cost = tc
+    tickets_p_round = t
+    total_cost = total_rounds * tickets_p_round * ticket_cost
+    
+
+    print(f" Out of {total_rounds} total rounds, buying {tickets_p_round} tickets per round at  ${ticket_cost} per ticket, You won a total of ${(total_winnings):,} with a cost of ${(total_cost):,} giving you a net of ${(total_winnings - total_cost):,}")
 
 
 def main():
-    dct = monte_carlo(10, 2, 30_000_000, 50)
-    pprint(dct)
-    # t = Round(10, 2, 30_000_000)
-    # pprint(f" The winning ticket is : {t.win_numbers}")
-    # pprint(f"ticket list is {t.ticket_list}")
-    # pprint(f" total winnings this round is {t.total_winnings}")
-    # pprint(f" Net winnings is {t.net}")
-    # pprint(f" Win distribution is {t.win_distr}")
+    tickets_a_round = 100
+    ticket_cost = 2
+    jackpot = 30_000_000
+    times = 50_000
+
+    lst = monte_carlo(tickets_a_round, ticket_cost, jackpot, times)
+
+    analyze(lst, tickets_a_round, ticket_cost)
 
 
 if __name__ == "__main__":
